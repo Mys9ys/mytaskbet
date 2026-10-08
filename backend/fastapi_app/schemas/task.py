@@ -1,6 +1,9 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Literal
+
+
+Difficulty = Literal["easy", "medium", "hard"]
 
 
 class TaskTemplateBase(BaseModel):
@@ -24,49 +27,48 @@ class TaskTemplateResponse(TaskTemplateBase):
     average_bid: float = 0.0
     max_allowed_bid: float = 0.0
     usage_count: int = 0
+    fund_balance: int = 0
+    completion_count: int = 0
     created_at: datetime
     updated_at: Optional[datetime] = None
-    
+
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserTaskBase(BaseModel):
     title: str
     description: Optional[str] = None
     category: Optional[str] = None
-    bid_amount: float
 
 
 class UserTaskCreate(UserTaskBase):
+    difficulty: Difficulty = "easy"
     template_id: Optional[int] = None
-    
-    @validator('bid_amount')
-    def bid_amount_positive(cls, v):
-        if v <= 0:
-            raise ValueError('Bid amount must be positive')
-        return v
 
 
 class UserTaskUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     category: Optional[str] = None
-    bid_amount: Optional[float] = None
+    difficulty: Optional[Difficulty] = None
 
 
 class UserTaskResponse(UserTaskBase):
     id: int
     user_id: int
     template_id: Optional[int] = None
+    bid_amount: float
+    difficulty: Difficulty = "easy"
+    outcome: Optional[str] = None
     is_completed: bool = False
     completion_date: Optional[datetime] = None
     streak_count: int = 0
     created_at: datetime
     updated_at: Optional[datetime] = None
-    
+
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TaskBidHistoryBase(BaseModel):
@@ -82,6 +84,6 @@ class TaskBidHistoryCreate(TaskBidHistoryBase):
 class TaskBidHistoryResponse(TaskBidHistoryBase):
     id: int
     created_at: datetime
-    
+
     class Config:
-        orm_mode = True
+        from_attributes = True

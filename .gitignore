@@ -1,2 +1,21 @@
-# Файлы, игнорируемые по умолчанию
+# Dependencies
 node_modules/
+backend/venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Local DB
+backend/taskbet.db
+*.db-journal
+
+# Logs & env
+*.log
+.env
+.env.*
+
+# OS / IDE
+.DS_Store
+Thumbs.db

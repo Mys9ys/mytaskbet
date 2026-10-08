@@ -1,10 +1,24 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# Import routers
 from fastapi_app.api import auth, tasks, bank, rankings
+from fastapi_app.database.bootstrap import bootstrap_schema
 
-app = FastAPI(title="myTaskBet API", description="Backend for myTaskBet mobile application", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    bootstrap_schema()
+    yield
+
+
+app = FastAPI(
+    title="myTaskBet API",
+    description="Backend for myTaskBet mobile application",
+    version="1.0.0",
+    lifespan=lifespan,
+)
 
 # Configure CORS
 app.add_middleware(

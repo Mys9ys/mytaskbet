@@ -25,7 +25,7 @@ class RankingResponse(RankingBase):
     updated_at: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserTaskRankingBase(BaseModel):
@@ -51,7 +51,7 @@ class UserTaskRankingResponse(UserTaskRankingBase):
     updated_at: Optional[datetime] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class LeaderboardEntry(BaseModel):
@@ -61,7 +61,7 @@ class LeaderboardEntry(BaseModel):
     rank_position: int
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class LeaderboardResponse(BaseModel):
@@ -71,7 +71,7 @@ class LeaderboardResponse(BaseModel):
     updated_at: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserRankingsResponse(BaseModel):
@@ -83,4 +83,4 @@ class UserRankingsResponse(BaseModel):
     task_rankings: List[Dict[str, Any]] = []
     
     class Config:
-        orm_mode = True
+        from_attributes = True

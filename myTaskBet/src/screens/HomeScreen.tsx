@@ -1,90 +1,61 @@
 import * as React from 'react';
-import {View, Text, StyleSheet, Button, Alert} from 'react-native';
+import {View, StyleSheet, Button, Alert, ActivityIndicator} from 'react-native';
 import TaskList from '../components/TaskList';
 import CategoryFilter from '../components/CategoryFilter';
+import StatsHeader from '../components/StatsHeader';
 import TaskService, {Task, TaskCategory} from '../utils/TaskService';
 import {filterTasksByCategory} from '../utils/TaskUtils';
+import {useAuth} from '../context/AuthContext';
 
-function HomeScreen({navigation}) {
+function HomeScreen({navigation}: any) {
+  const {refreshUser} = useAuth();
   const [tasks, setTasks] = React.useState<Task[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [selectedCategory, setSelectedCategory] = React.useState<TaskCategory | 'all'>('all');
-  
+
+  const loadTasks = React.useCallback(async () => {
+    setLoading(true);
+    try {
+      const loaded = await TaskService.getAll('active');
+      setTasks(loaded);
+      await refreshUser();
+    } catch (e: any) {
+      Alert.alert('Ошибка', e?.response?.data?.detail ?? 'Не удалось загрузить задачи');
+    } finally {
+      setLoading(false);
+    }
+  }, [refreshUser]);
+
   React.useEffect(() => {
+    const unsub = navigation.addListener('focus', loadTasks);
     loadTasks();
-    
-    const unsubscribe = navigation.addListener('focus', () => {
-      loadTasks();
-    });
-    
-    return unsubscribe;
-  }, [navigation]);
-  
-  const loadTasks = async () => {
-    const loadedTasks = await TaskService.getAll();
-    setTasks(loadedTasks);
-  };
-  
+    return unsub;
+  }, [navigation, loadTasks]);
+
   const handleTaskPress = (task: Task) => {
-    navigation.navigate('Task', {taskId: task.id});
-  };
-  
-  const handleDeleteTask = async (taskId: string) => {
-    Alert.alert(
-      'Delete Task',
-      'Are you sure you want to delete this task?',
-      [
-        {text: 'Cancel', style: 'cancel'},
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            const success = await TaskService.delete(taskId);
-            if (success) {
-              loadTasks();
-            } else {
-              Alert.alert('Error', 'Failed to delete task');
-            }
-          },
-        },
-      ]
-    );
+    navigation.navigate('Task', {taskId: String(task.id)});
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>My Tasks</Text>
-      <CategoryFilter 
-        selectedCategory={selectedCategory} 
-        onCategorySelect={setSelectedCategory} 
-      />
-      <TaskList 
-        tasks={filterTasksByCategory(tasks, selectedCategory)} 
-        onTaskPress={handleTaskPress} 
-        onDelete={handleDeleteTask} 
-        categoryFilter={selectedCategory}
-      />
+      <StatsHeader />
+      <CategoryFilter selectedCategory={selectedCategory} onCategorySelect={setSelectedCategory} />
+      {loading ? (
+        <ActivityIndicator style={{marginTop: 40}} />
+      ) : (
+        <TaskList tasks={filterTasksByCategory(tasks, selectedCategory)} onTaskPress={handleTaskPress} />
+      )}
       <View style={styles.buttonContainer}>
-        <Button 
-          title="Create New Task" 
-          onPress={() => navigation.navigate('Task', {taskId: 'new'})} 
-        />
+        <Button title="Новая задача" onPress={() => navigation.navigate('Task', {taskId: 'new'})} />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
-  },
+  container: {flex: 1, backgroundColor: '#f5f5f5'},
   buttonContainer: {
-    padding: 20,
+    padding: 16,
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#eee',

@@ -22,7 +22,7 @@ class BankResponse(BaseModel):
     updated_at: Optional[datetime] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class BankTransactionBase(BaseModel):
@@ -42,7 +42,7 @@ class BankTransactionResponse(BankTransactionBase):
     created_at: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class RewardDistributionBase(BaseModel):
@@ -61,7 +61,7 @@ class RewardDistributionResponse(RewardDistributionBase):
     distribution_date: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class BankStatusResponse(BaseModel):
@@ -70,4 +70,4 @@ class BankStatusResponse(BaseModel):
     weekly_distributions: float
     
     class Config:
-        orm_mode = True
+        from_attributes = True

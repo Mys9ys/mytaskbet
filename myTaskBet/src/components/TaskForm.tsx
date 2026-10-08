@@ -1,118 +1,102 @@
 import * as React from 'react';
-import {View, TextInput, StyleSheet, Picker, Text} from 'react-native';
-import {Task} from '../utils/TaskService';
+import {View, TextInput, StyleSheet, Text, TouchableOpacity, Button} from 'react-native';
+import {Task, Difficulty, CreateTaskInput} from '../utils/TaskService';
+import {CATEGORY_LIST, getCategoryLabel} from '../types/categories';
 
 type TaskFormProps = {
-  task?: Task;
-  onSubmit: (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onSubmit: (taskData: CreateTaskInput) => void;
 };
 
-function TaskForm({task, onSubmit}: TaskFormProps) {
-  const [title, setTitle] = React.useState(task?.title || '');
-  const [description, setDescription] = React.useState(task?.description || '');
-  const [status, setStatus] = React.useState<"pending" | "in-progress" | "completed">(task?.status || 'pending');
-  const [category, setCategory] = React.useState<TaskCategory>(task?.category || 'other');
+const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard'];
+
+function TaskForm({onSubmit}: TaskFormProps) {
+  const [title, setTitle] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [category, setCategory] = React.useState<string>('habits');
+  const [difficulty, setDifficulty] = React.useState<Difficulty>('easy');
 
   const handleSubmit = () => {
     if (!title.trim()) return;
-    
     onSubmit({
       title: title.trim(),
-      description: description.trim(),
-      status,
+      description: description.trim() || undefined,
       category,
+      difficulty,
     });
   };
 
-  React.useEffect(() => {
-    handleSubmit();
-  }, [status, category]);
-
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Title*</Text>
-      <TextInput
-        style={styles.input}
-        value={title}
-        onChangeText={setTitle}
-        placeholder="Enter task title"
-        onSubmitEditing={handleSubmit}
-      />
-      
-      <Text style={styles.label}>Description</Text>
+      <Text style={styles.label}>Название *</Text>
+      <TextInput style={styles.input} value={title} onChangeText={setTitle} placeholder="Дело" />
+
+      <Text style={styles.label}>Описание</Text>
       <TextInput
         style={[styles.input, styles.textArea]}
         value={description}
         onChangeText={setDescription}
-        placeholder="Enter task description"
         multiline
-        numberOfLines={4}
+        numberOfLines={3}
       />
-      
-      <Text style={styles.label}>Status</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={status}
-          style={styles.picker}
-          onValueChange={(itemValue) => setStatus(itemValue)}>
-          <Picker.Item label="Pending" value="pending" />
-          <Picker.Item label="In Progress" value="in-progress" />
-          <Picker.Item label="Completed" value="completed" />
-        </Picker>
+
+      <Text style={styles.label}>Сложность (ставка автоматически)</Text>
+      <View style={styles.row}>
+        {DIFFICULTIES.map(d => (
+          <TouchableOpacity
+            key={d}
+            style={[styles.chip, difficulty === d && styles.chipActive]}
+            onPress={() => setDifficulty(d)}>
+            <Text style={difficulty === d ? styles.chipTextActive : styles.chipText}>
+              {d === 'easy' ? '20' : d === 'medium' ? '50' : '100'}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
-      
-      <Text style={styles.label}>Category</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={category}
-          style={styles.picker}
-          onValueChange={(itemValue) => setCategory(itemValue)}>
-          <Picker.Item label="Work" value="work" />
-          <Picker.Item label="Personal" value="personal" />
-          <Picker.Item label="Shopping" value="shopping" />
-          <Picker.Item label="Health" value="health" />
-          <Picker.Item label="Education" value="education" />
-          <Picker.Item label="Other" value="other" />
-        </Picker>
+
+      <Text style={styles.label}>Категория</Text>
+      <View style={styles.categories}>
+        {CATEGORY_LIST.map(c => (
+          <TouchableOpacity
+            key={c}
+            style={[styles.catChip, category === c && styles.chipActive]}
+            onPress={() => setCategory(c)}>
+            <Text style={category === c ? styles.chipTextActive : styles.chipText}>
+              {getCategoryLabel(c)}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
+
+      <Button title="Создать задачу" onPress={handleSubmit} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#333',
-  },
+  container: {padding: 20},
+  label: {fontSize: 14, fontWeight: '600', marginBottom: 6, marginTop: 8},
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
     padding: 12,
-    fontSize: 16,
     backgroundColor: '#fff',
-    marginBottom: 16,
   },
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top',
-  },
-  pickerContainer: {
+  textArea: {height: 80, textAlignVertical: 'top'},
+  row: {flexDirection: 'row', gap: 8, marginBottom: 8},
+  chip: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 8,
-    overflow: 'hidden',
-    backgroundColor: '#fff',
-    marginBottom: 16,
+    alignItems: 'center',
   },
-  picker: {
-    width: '100%',
-  },
+  chipActive: {backgroundColor: '#00796b', borderColor: '#00796b'},
+  chipText: {color: '#333'},
+  chipTextActive: {color: '#fff', fontWeight: '600'},
+  categories: {flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16},
+  catChip: {paddingHorizontal: 10, paddingVertical: 6, borderRadius: 16, borderWidth: 1, borderColor: '#ddd'},
 });
 
 export default TaskForm;

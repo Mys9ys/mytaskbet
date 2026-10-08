@@ -15,7 +15,8 @@ class User(Base):
     total_earned_points = Column(Float, default=0.0)
     streak_count = Column(Integer, default=0)
     max_streak = Column(Integer, default=0)
-    task_slots = Column(Integer, default=10)  # Initial 10 task slots
+    task_slots = Column(Integer, default=3)  # Active daily task slots (MVP)
+    achievement_points = Column(Integer, default=0)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

@@ -1,0 +1,58 @@
+---
+description: Agent runs backend, tests, and mobile dev servers itself — do not ask the user to start them manually
+alwaysApply: true
+---
+
+# Run & verify (myTaskBet)
+
+The user expects **you** to run servers, tests, and builds — not to paste instructions and wait.
+
+## Default behavior
+
+- After backend changes: **start or reuse** API and **smoke-test** (register/login, create task, complete/fail).
+- After mobile changes: **run Metro / build** when verification needs it; fix errors before reporting done.
+- Prefer **`docs/DEV.md`** and **`docs/SPEC.md`** for paths and conventions.
+- Only ask the user to run something when **blocked** (Play signing, device pairing, Beget panel, missing Android SDK).
+
+## Before starting processes
+
+1. List `terminals` folder — do not duplicate **uvicorn** or **Metro** if already running.
+2. Use **background** (`block_until_ms: 0`) for long-running servers.
+
+## Commands (Windows, project root `d:\OSPanel\home\mytaskbet`)
+
+**Backend (FastAPI):**
+
+```powershell
+cd d:\OSPanel\home\mytaskbet\backend
+.\venv\Scripts\python.exe main.py
+```
+
+**API smoke (after bootstrap):**
+
+```powershell
+cd d:\OSPanel\home\mytaskbet\backend
+.\venv\Scripts\python.exe -c "from fastapi.testclient import TestClient; ..."
+```
+
+Or hit `GET http://127.0.0.1:8000/health` via shell.
+
+**Mobile:**
+
+```powershell
+cd d:\OSPanel\home\mytaskbet\myTaskBet
+npm install   # if deps changed
+npm start     # Metro, background
+npm run android   # when emulator/device verification is required
+```
+
+Emulator API base: `http://10.0.2.2:8000/api` (`myTaskBet/src/config.ts`).
+
+## Reporting
+
+- Say what you **started**, **URL/port**, and **test result** (pass/fail + one line).
+- If a command fails: **diagnose and retry** an alternative; do not stop after one error.
+
+## Out of scope unless requested
+
+- `git commit` / push, Play release signing, Beget/VPS deploy, purchasing domains.

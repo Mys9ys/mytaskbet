@@ -6,7 +6,7 @@ from typing import List, Optional
 # Local imports
 from fastapi_app.models.ranking import Ranking, UserTaskRanking
 from fastapi_app.models.user import User
-from fastapi_app.models.task import TaskTemplate
+from fastapi_app.models.task import TaskTemplate, UserTask
 from fastapi_app.schemas.ranking import RankingResponse, UserTaskRankingResponse, LeaderboardResponse, UserRankingsResponse
 from fastapi_app.database.database import get_db
 from fastapi_app.utils.security import get_current_user
