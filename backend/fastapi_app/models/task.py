@@ -33,6 +33,7 @@ class UserTask(Base):
     category = Column(String, index=True)
     bid_amount = Column(Float, nullable=False)  # Reserved stake
     difficulty = Column(String, default="easy", nullable=False)
+    period = Column(String, default="daily", nullable=False)  # daily | weekly | monthly
     outcome = Column(String, nullable=True)  # success | failed
     is_completed = Column(Boolean, default=False)
     completion_date = Column(DateTime(timezone=True))

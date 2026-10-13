@@ -128,6 +128,7 @@ def create_user_task(
         category=task.category,
         template_id=task.template_id,
         difficulty=task.difficulty,
+        period=task.period,
         bid_amount=stake,
         is_completed=False,
     )

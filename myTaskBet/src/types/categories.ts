@@ -1,37 +1,60 @@
-export const CATEGORY_LIST = [
-  'habits',
-  'daily_tasks',
-  'goals',
-  'challenges',
-  'work',
-  'personal',
-  'shopping',
-  'health',
-  'education',
-  'other',
-] as const;
+/** MVP categories — each can grow its own form extras later. */
+export const CATEGORY_LIST = ['reading', 'sports'] as const;
 
 export type TaskCategory = (typeof CATEGORY_LIST)[number];
 
-export const CATEGORY_META: Record<TaskCategory, {label: string; color: string}> = {
-  habits:        {label: 'Привычки',   color: '#33a02c'},
-  daily_tasks:   {label: 'Ежедневно',  color: '#1f78b4'},
-  goals:         {label: 'Цели',       color: '#6a3d9a'},
-  challenges:    {label: 'Челленджи',  color: '#ff7f00'},
-  work:          {label: 'Работа',     color: '#005f73'},
-  personal:      {label: 'Личное',     color: '#0a9396'},
-  shopping:      {label: 'Покупки',    color: '#e31a1c'},
-  health:        {label: 'Здоровье',   color: '#ee9b00'},
-  education:     {label: 'Обучение',   color: '#9b5de5'},
-  other:         {label: 'Другое',     color: '#6c757d'},
+export type CategoryMeta = {
+  label: string;
+  /** Saturated accent (left rail, selected chip, controls) */
+  color: string;
+  /** Soft fill behind the form shell */
+  soft: string;
+  emoji: string;
 };
 
+export const CATEGORY_META: Record<TaskCategory, CategoryMeta> = {
+  reading: {
+    label: 'Чтение',
+    /** Sepia / old book binding */
+    color: '#8b5e34',
+    /** Aged paper */
+    soft: '#f4ecd8',
+    emoji: '📖',
+  },
+  sports: {
+    label: 'Физкультура',
+    color: '#ea580c',
+    soft: '#fff7ed',
+    emoji: '🏃',
+  },
+};
+
+export function getCategoryMeta(cat: TaskCategory | string): CategoryMeta {
+  return (
+    (CATEGORY_META as Record<string, CategoryMeta>)[cat] ?? {
+      label: String(cat),
+      color: '#6c757d',
+      soft: '#f1f5f9',
+      emoji: '•',
+    }
+  );
+}
+
 export function getCategoryLabel(cat: TaskCategory | string): string {
-  return (CATEGORY_META as any)[cat]?.label ?? String(cat);
+  return getCategoryMeta(cat).label;
 }
 
 export function getCategoryColor(cat: TaskCategory | string): string {
-  return (CATEGORY_META as any)[cat]?.color ?? CATEGORY_META.other.color;
+  return getCategoryMeta(cat).color;
+}
+
+export function getCategoryEmoji(cat: TaskCategory | string): string {
+  return getCategoryMeta(cat).emoji;
+}
+
+export function categoryChipLabel(cat: TaskCategory | string): string {
+  const m = getCategoryMeta(cat);
+  return `${m.emoji} ${m.label}`;
 }
 
 export function isTaskCategory(v: any): v is TaskCategory {

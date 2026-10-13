@@ -5,6 +5,7 @@ import TaskApi, {
   Difficulty,
 } from '../services/TaskApi';
 import {TaskCategory} from '../types/categories';
+import {TaskPeriod} from '../constants/period';
 
 export type Task = UserTask;
 export type {TaskTemplate, TaskFilterStatus, TaskCategory, Difficulty};
@@ -14,6 +15,7 @@ export type CreateTaskInput = {
   description?: string;
   category?: TaskCategory | string;
   difficulty: Difficulty;
+  period?: TaskPeriod;
   template_id?: number;
 };
 

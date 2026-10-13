@@ -3,6 +3,7 @@ import {View, Text, StyleSheet, Button, Alert, ActivityIndicator, ScrollView} fr
 import TaskForm from '../components/TaskForm';
 import TaskService, {Task, CreateTaskInput} from '../utils/TaskService';
 import {difficultyLabel, getCategoryName} from '../utils/TaskUtils';
+import {periodLabel} from '../constants/period';
 import {useAuth} from '../context/AuthContext';
 
 function TaskScreen({route, navigation}: any) {
@@ -75,6 +76,7 @@ function TaskScreen({route, navigation}: any) {
       <View style={styles.card}>
         <Text style={styles.title}>{task.title}</Text>
         {task.description ? <Text style={styles.desc}>{task.description}</Text> : null}
+        <Text style={styles.meta}>Период: {periodLabel(task.period)}</Text>
         <Text style={styles.meta}>{difficultyLabel(task.difficulty)}</Text>
         <Text style={styles.meta}>Категория: {getCategoryName(task.category)}</Text>
         <Text style={styles.meta}>Ставка (резерв): {task.bid_amount}</Text>

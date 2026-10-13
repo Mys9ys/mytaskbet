@@ -4,6 +4,7 @@ from typing import Optional, List, Literal
 
 
 Difficulty = Literal["easy", "medium", "hard"]
+TaskPeriod = Literal["daily", "weekly", "monthly"]
 
 
 class TaskTemplateBase(BaseModel):
@@ -44,6 +45,7 @@ class UserTaskBase(BaseModel):
 
 class UserTaskCreate(UserTaskBase):
     difficulty: Difficulty = "easy"
+    period: TaskPeriod = "daily"
     template_id: Optional[int] = None
 
 
@@ -60,6 +62,7 @@ class UserTaskResponse(UserTaskBase):
     template_id: Optional[int] = None
     bid_amount: float
     difficulty: Difficulty = "easy"
+    period: TaskPeriod = "daily"
     outcome: Optional[str] = None
     is_completed: bool = False
     completion_date: Optional[datetime] = None

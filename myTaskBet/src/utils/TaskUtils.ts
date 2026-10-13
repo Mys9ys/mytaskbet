@@ -1,5 +1,6 @@
 import {TaskCategory, CATEGORY_LIST, CATEGORY_META, getCategoryColor, getCategoryLabel} from '../types/categories';
 import {UserTask} from '../services/TaskApi';
+import {difficultyDisplay} from '../constants/difficulty';
 
 export {TaskCategory, CATEGORY_LIST, getCategoryColor, getCategoryLabel};
 
@@ -23,16 +24,10 @@ export function filterTasksByCategory(tasks: Task[], category: TaskCategory | 'a
 }
 
 export function difficultyLabel(d: string): string {
-  switch (d) {
-    case 'easy':
-      return 'Лёгкая · 20';
-    case 'medium':
-      return 'Средняя · 50';
-    case 'hard':
-      return 'Сложная · 100';
-    default:
-      return d;
+  if (d === 'easy' || d === 'medium' || d === 'hard') {
+    return difficultyDisplay(d);
   }
+  return d;
 }
 
 export default filterTasksByCategory;
